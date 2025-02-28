@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>QSS Comments</title>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+	  
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      transition: background-color 0.3s ease;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      #background-color: #f1f1f1;
+	  background-color: #03fca9;
+  }
+
+  #searchBox {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+    td {
+      cursor: pointer;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  #searchBox:focus {
+    outline: none;
+    border-color: #007bff; /* Highlight on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add focus shadow */
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    th, td {
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    #searchBox {
+      font-size: 14px;
+    }
+  }
+
+</style>
+</head>
+<body>
+<div class="container">
+<h1>QSS Comments</h1>
+<input type="text" id="searchBox" placeholder="Search...">
+
+<table id="textTable">
+  <thead>
+    <tr>
+      <th>Text</th>
+    </tr>
+  </thead>
+  <tbody>
+  
+  
+    <tr><td>This is row 1.</td></tr>
+    <tr><td>Another line of sample text.</td></tr>
+    <tr><td>Example with some more words.</td></tr>
+    <tr><td>A short phrase.</td></tr>
+    <tr><td>Longer sentence with several words.</td></tr>
+    <tr><td>More data for the table.</td></tr>
+    <tr><td>Testing copy functionality.</td></tr>
+    <tr><td>One more row to demonstrate.</td></tr>
+    <tr><td>Searchable text example.</td></tr>
+    <tr><td>Final row for the table.</td></tr>
+    <tr><td>This is row 1.</td></tr>
+    <tr><td>Another line of sample text.</td></tr>
+
+  </tbody>
+</table>
+
+<script>
+  // ... (JavaScript code remains the same)
+  const table = document.getElementById('textTable');
+  const searchBox = document.getElementById('searchBox');
+
+  table.addEventListener('click', function(event) {
+    const target = event.target;
+    if (target.tagName === 'TD') {
+      const text = target.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    }
+  });
+
+  searchBox.addEventListener('input', function() {
+    const filter = searchBox.value.toLowerCase();
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+      const td = rows[i].getElementsByTagName('td')[0];
+      if (td) {
+        const text = td.textContent.toLowerCase();
+        if (text.indexOf(filter) > -1) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    }
+  });
+
+</script>
+
+</body>
+</html>
