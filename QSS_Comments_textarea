@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/Michael/Downloads/QSS%20Commentsaaaaaaaaaaa.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>QSS Comments</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #03a9f4;
+        margin: 20px;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    table {
+        width:100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+        transition: background-color 0.3s ease;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #03fca9;
+    }
+    #searchBox {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    td {
+        cursor: pointer;
+    }
+
+    .container {
+        word-wrap: break-word;
+        white-space: normal;
+        max-width: 80%;
+        margin: auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    #searchBox:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    @media (max-width: 600px) {
+        th, td {
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+        #searchBox {
+            font-size: 14px;
+        }
+    }
+    #newRowInput {
+		resize: none;
+        margin-top: 20px;
+        padding: 10px;
+        width: calc(100% - 22px);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    #addRowBtn {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #03a9f4;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    #addRowBtn:hover {
+        background-color: #0288d1;
+    }
+    td {
+        overflow-wrap: break-word;
+        word-break: break-word;
+        word-wrap: break-word;
+        position: relative;
+    }
+    .delete-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: none;
+        border: none;
+        font-size: 16px;
+        color: #f44336;
+        cursor: pointer;
+    }
+    .delete-btn:hover {
+  	 background-color: #f44336;
+     color: white;
+}
+    #copyMessage {
+        position: absolute;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1000;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>QSS Comments</h1>
+<input type="text" id="searchBox" placeholder="Search...">
+
+<table id="textTable">
+    <thead>
+        <tr>
+            <th>Text</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+</tbody>
+</table>
+
+<textarea id="newRowInput" placeholder="Add a new comment..."></textarea><br>
+<button id="addRowBtn" onclick="addRow()">Add</button><br>
+<div id="copyMessage" style="left: 390px; top: 331px; display: none;">Text copied!</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadTableData();
+    });
+
+    const table = document.getElementById('textTable');
+    const searchBox = document.getElementById('searchBox');
+    const copyMessage = document.getElementById('copyMessage');
+
+    table.addEventListener('click', function(event) {
+        const target = event.target;
+        if (target.tagName === 'TD' && !target.classList.contains('delete-btn')) {
+            const text = target.textContent.replace('×', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                copyMessage.style.left = event.clientX + 'px';
+                copyMessage.style.top = event.clientY + 'px';
+                copyMessage.style.display = 'block';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 500);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+        if (target.classList.contains('delete-btn')) {
+            if(confirm("Are you sure you want to delete this comment?")){
+                deleteRow(target.parentElement);
+            }
+        }
+    });
+
+    searchBox.addEventListener('input', function() {
+        const filter = searchBox.value.toLowerCase();
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const td = rows[i].getElementsByTagName('td')[0];
+            if (td) {
+                const text = td.textContent.toLowerCase();
+                if (text.indexOf(filter) > -1) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    });
+
+	function addRow() {
+    const input = document.getElementById('newRowInput');
+    const tableBody = document.getElementById('tableBody');
+
+    if (input.value.trim() !== '') {
+        const newRow = tableBody.insertRow();
+        const newCellText = newRow.insertCell(0);
+
+        // Preserve line breaks and whitespace
+        newCellText.innerHTML = input.value.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '<button class="delete-btn">×</button>';
+        newCellText.style.whiteSpace = 'pre-wrap'; // Apply CSS property
+
+        saveToLocalStorage(input.value);
+        input.value = '';
+    } else {
+        alert('Please enter text to add a row!');
+    }
+}
+
+    function saveToLocalStorage(text) {
+        let tableData = JSON.parse(localStorage.getItem('tableData')) || [];
+        tableData.push(text);
+        localStorage.setItem('tableData', JSON.stringify(tableData));
+        loadTableData();
+    }
+
+    function loadTableData() {
+        const tableBody = document.getElementById('tableBody');
+        const tableData = JSON.parse(localStorage.getItem('tableData')) || [];
+        tableBody.innerHTML = '';
+
+        tableData.forEach(text => {
+            const newRow = tableBody.insertRow();
+            const newCellText = newRow.insertCell(0);
+            newCellText.innerHTML = text.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '<button class="delete-btn">×</button>';
+            newCellText.style.whiteSpace = 'pre-wrap';
+        });
+    }
+
+    function deleteRow(row) {
+        const text = row.textContent.replace('×', '').trim();
+        let tableData = JSON.parse(localStorage.getItem('tableData')) || [];
+        tableData = tableData.filter(item => item !== text);
+        localStorage.setItem('tableData', JSON.stringify(tableData));
+        loadTableData();
+    }
+</script>
+</div>
+
+</body></html>
